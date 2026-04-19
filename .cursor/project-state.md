@@ -186,8 +186,12 @@ Stage 2: Core Connectivity MVP complete (GO for MVP beta).
   - `prisma migrate deploy`: no pending migrations,
   - `prisma migrate status`: schema up to date,
   - DB index verification: `Node_endpointHost_endpointPort_key` exists.
+- Admin-web CSRF route-level coverage expanded:
+  - route tests added for mutating endpoints (`/api/session/logout`, `/api/telegram/link-code`),
+  - coverage includes missing/mismatched csrf and valid-token path assertions,
+  - admin-web test + typecheck pass with new security checks.
 
 ## Next Actions
 1. Provision dedicated staging DB credentials to replace staging-equivalent local evidence with full remote staging proof.
-2. Continue next sprint hardening tasks (WireGuard operationalization + production prep).
+2. Add release guard automation for evidence + smoke checks before tagging.
 3. Keep CI/build health and runbooks aligned with each hardening increment.
