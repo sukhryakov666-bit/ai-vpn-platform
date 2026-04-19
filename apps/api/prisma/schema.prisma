@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  email        String   @unique
+  passwordHash String
+  isActive     Boolean  @default(true)
+  telegramUserId String? @unique
+  telegramUsername String?
+  telegramLinkedAt DateTime?
+  refreshTokens RefreshToken[]
+  telegramLinkCodes TelegramLinkCode[]
+  wireGuardProfiles WireGuardProfile[]
+}
+
+model RefreshToken {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  tokenHash   String    @unique
+  userId      String
+  replacedById String?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replacedBy  RefreshToken? @relation("TokenRotation", fields: [replacedById], references: [id])
+  previous    RefreshToken[] @relation("TokenRotation")
+
+  @@index([userId])
+}
+
+model TelegramLinkCode {
+  id          String   @id @default(cuid())
+  codeHash    String   @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+enum NodeProtocol {
+  wireguard
+  xray
+}
+
+enum NodeHealth {
+  healthy
+  degraded
+  unhealthy
+}
+
+enum WireGuardProfileStatus {
+  active
+  revoked
+}
+
+model Node {
+  id              String        @id @default(cuid())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  name            String        @unique
+  region          String
+  protocol        NodeProtocol
+  endpointHost    String
+  endpointPort    Int
+  publicKey       String
+  allowedIps      String        @default("0.0.0.0/0")
+  dns             String        @default("1.1.1.1")
+  addressPoolCidr String        @default("10.8.0.0/24")
+  health          NodeHealth    @default(healthy)
+  score           Int           @default(100)
+  isActive        Boolean       @default(true)
+  wireGuardProfiles WireGuardProfile[]
+
+  @@index([protocol, health, isActive, score])
+}
+
+model WireGuardProfile {
+  id               String                 @id @default(cuid())
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  userId           String
+  nodeId           String
+  clientPrivateKey String
+  clientPublicKey  String
+  preSharedKey     String
+  clientAddress    String
+  config           String
+  status           WireGuardProfileStatus @default(active)
+  revokedAt        DateTime?
+  user             User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  node             Node                   @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([nodeId, status])
+}

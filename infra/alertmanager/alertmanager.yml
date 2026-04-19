@@ -1,0 +1,85 @@
+global:
+  resolve_timeout: 5m
+  smtp_from: "${ALERT_EMAIL_FROM}"
+  smtp_smarthost: "${ALERT_SMARTHOST}"
+  smtp_auth_username: "${ALERT_SMTP_USERNAME}"
+  smtp_auth_password: "${ALERT_SMTP_PASSWORD}"
+
+route:
+  receiver: "default"
+  group_by: ["alertname", "component"]
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 30m
+  routes:
+    - receiver: "critical-pagerduty"
+      matchers:
+        - severity="critical"
+        - paging_provider="pagerduty"
+      continue: true
+    - receiver: "critical-opsgenie"
+      matchers:
+        - severity="critical"
+        - paging_provider="opsgenie"
+      continue: true
+    - receiver: "critical-paging-webhook"
+      matchers:
+        - severity="critical"
+      continue: true
+    - receiver: "critical-telegram"
+      matchers:
+        - severity="critical"
+      continue: true
+    - receiver: "high-telegram"
+      matchers:
+        - severity="high"
+      continue: true
+    - receiver: "warning-email"
+      matchers:
+        - severity=~"warning|high|critical"
+
+receivers:
+  - name: "default"
+  - name: "critical-pagerduty"
+    pagerduty_configs:
+      - routing_key: "${ALERT_PAGERDUTY_ROUTING_KEY}"
+        severity: "critical"
+        description: "{{ .CommonAnnotations.summary }}"
+        details:
+          alertname: "{{ .CommonLabels.alertname }}"
+          component: "{{ .CommonLabels.component }}"
+          request_id: "{{ .CommonLabels.request_id }}"
+          description: "{{ .CommonAnnotations.description }}"
+          runbook: "docs/runbooks/logging-observability.md"
+        send_resolved: true
+  - name: "critical-opsgenie"
+    opsgenie_configs:
+      - api_key: "${ALERT_OPSGENIE_API_KEY}"
+        priority: "P1"
+        message: "{{ .CommonAnnotations.summary }}"
+        description: "{{ .CommonAnnotations.description }}"
+        tags: "component:{{ .CommonLabels.component }},severity:{{ .CommonLabels.severity }}"
+        send_resolved: true
+  - name: "critical-paging-webhook"
+    webhook_configs:
+      - url: "${ALERT_PAGING_WEBHOOK_URL}"
+        send_resolved: true
+        max_alerts: 0
+  - name: "critical-telegram"
+    telegram_configs:
+      - bot_token: "${ALERT_TELEGRAM_BOT_TOKEN}"
+        chat_id: ${ALERT_TELEGRAM_CHAT_ID}
+        message: "{{ .CommonAnnotations.summary }}\n{{ .CommonAnnotations.description }}"
+        parse_mode: ""
+        send_resolved: true
+  - name: "high-telegram"
+    telegram_configs:
+      - bot_token: "${ALERT_TELEGRAM_BOT_TOKEN}"
+        chat_id: ${ALERT_TELEGRAM_CHAT_ID}
+        message: "[HIGH] {{ .CommonAnnotations.summary }}\n{{ .CommonAnnotations.description }}"
+        parse_mode: ""
+        send_resolved: true
+  - name: "warning-email"
+    email_configs:
+      - to: "${ALERT_EMAIL_TO}"
+        send_resolved: true

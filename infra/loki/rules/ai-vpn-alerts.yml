@@ -1,0 +1,37 @@
+groups:
+  - name: ai-vpn-platform-alerts
+    interval: 1m
+    rules:
+      - alert: ApiHighErrorRate5xx
+        expr: |
+          sum(count_over_time({component="api.http"} | json | status=~"5.." [5m])) > 5
+        for: 2m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High API 5xx error rate"
+          description: "More than 5 API 5xx responses within 5 minutes."
+
+      - alert: AuthUnauthorizedSpike
+        expr: |
+          sum(count_over_time({component="api.http"} | json | status="401" [10m])) > 20
+        for: 3m
+        labels:
+          severity: warning
+          component: auth
+        annotations:
+          summary: "401 spike detected"
+          description: "Authorization failures exceeded threshold in 10 minutes."
+
+      - alert: TelegramDiagnosticsFailureSpike
+        expr: |
+          sum(count_over_time({component="admin-web.telegram"} | json | event="link_code_issue_failed" [10m])) > 10
+        for: 5m
+        labels:
+          severity: critical
+          component: telegram
+          paging_provider: pagerduty
+        annotations:
+          summary: "Telegram link code failures spike"
+          description: "Repeated link-code failures detected from admin-web proxy."

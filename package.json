@@ -1,0 +1,17 @@
+{
+  "name": "ai-vpn-platform",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "build": "corepack pnpm -r --if-present run build",
+    "dev": "corepack pnpm -r --parallel --if-present run start:dev",
+    "lint": "corepack pnpm -r --if-present run lint",
+    "test": "corepack pnpm -r --if-present run test",
+    "typecheck": "corepack pnpm -r --if-present run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,155 @@
+# Project State
+
+## Current Stage
+Stage 2: Core Connectivity MVP (node registry + managed WireGuard flow in progress).
+
+## Active Tracker
+- Primary execution tracker: `docs/execution-plan-2-weeks.md`
+- Current focus: Week 2 / Day 10
+- Tracking mode: checklist + done-criteria validation per day
+
+## Completed
+- Root project directory initialized.
+- Core project context and architecture rules created.
+- Initial implementation plan created.
+- Workspace package setup with shared packages.
+- NestJS API scaffold with:
+  - health endpoint,
+  - auth module (register, login, refresh, me),
+  - JWT strategy and guard,
+  - Prisma service and schema baseline,
+  - Swagger and global validation pipe.
+- Build and typecheck are passing.
+- Refresh token persistence and rotation added:
+  - DB-backed refresh token model,
+  - token hashing and revocation,
+  - refresh rotation chain (`replacedById`),
+  - logout endpoint.
+- Prisma migration and seed script prepared.
+- `services/node-monitor` bootstrap completed:
+  - deterministic probe contracts in `shared-types`,
+  - probing and scoring service,
+  - one-shot CLI runner for smoke checks,
+  - runbook in `docs/runbooks/node-monitor.md`.
+- `apps/telegram-bot` bootstrap completed:
+  - Telegraf bot skeleton with command handlers,
+  - onboarding/help/status/diagnostics commands,
+  - health endpoint for orchestration readiness checks,
+  - runbook in `docs/runbooks/telegram-bot.md`.
+- Telegram bot now connected to backend API:
+  - internal token guard for bot-to-api calls,
+  - one-time link code generation and redemption endpoints,
+  - API-backed status and diagnostics responses.
+- Added JWT-protected user endpoint for self-issued link codes:
+  - `POST /api/telegram-self/link-code`
+- `apps/admin-web` bootstrap completed with Telegram linking UI:
+  - Next.js app scaffold,
+  - user-facing card to call `POST /api/telegram-self/link-code`,
+  - one-time code display for `/link <code>` flow.
+- `apps/admin-web` session flow added:
+  - login form using `POST /api/auth/login`,
+  - secure HTTP-only cookie session via Next API routes,
+  - link-code issuance without manual JWT input field.
+- Admin-web proxy routes now support auto-refresh:
+  - refresh via `POST /api/auth/refresh` when access token is expired,
+  - cookie session rotation on successful refresh.
+- Baseline test coverage added for critical auth flows:
+  - API test for refresh token rotation/revocation,
+  - admin-web test for proxy auto-refresh retry logic.
+- Telegram link-code lifecycle tests added in API:
+  - issue code with hashed persistence and TTL check,
+  - successful redeem path (link + mark used),
+  - rejection for invalid/expired/used codes.
+- Telegram bot smoke tests added for API-integrated handlers:
+  - `/link` success path with API stub,
+  - `/status` API-backed response formatting,
+  - `/diagnostics` summary/actions formatting.
+- Telegram bot fallback/error-path tests added:
+  - missing link code usage hint,
+  - missing telegram profile id handling,
+  - API failure fallback messages for `/link`, `/status`, `/diagnostics`.
+- Admin-web link-code UX improved with user-facing error mapping:
+  - session-expired message with re-login hint,
+  - API-unavailable message,
+  - profile issue fallback message.
+- Request tracing baseline added:
+  - API emits/propagates `x-request-id` header for each request,
+  - telegram-bot API client sends `x-request-id` and includes it in error messages.
+- Request ID propagation expanded to admin-web proxy layer:
+  - all session/telegram proxy routes now carry `x-request-id` to upstream API,
+  - structured JSON logs added for login/session/link-code/logout events.
+- Observability transport baseline added in infra:
+  - Loki + Promtail + Grafana services in `docker-compose.yml`,
+  - datasource provisioning and runbook for request-id based querying.
+- Dashboards and alerting baseline added:
+  - Grafana dashboard provisioning with `AI VPN Observability`,
+  - Loki ruler alerts for API 5xx, auth 401 spikes, and link-code failure spikes,
+  - Alertmanager container and base config for routing.
+- Alertmanager receiver routing configured:
+  - severity-based routes (critical -> Telegram + Email, warning -> Email),
+  - env-driven secrets and SMTP/Telegram integration templates.
+- Escalation policy expanded for on-call paging:
+  - critical alerts now route to paging webhook + Telegram + email,
+  - high severity routes to Telegram + email,
+  - runbook includes severity/P-level matrix.
+- Provider-specific paging templates added:
+  - PagerDuty receiver with routing key/details mapping,
+  - Opsgenie receiver with API key/message/priority mapping,
+  - route selection by `paging_provider` label.
+- Stage 2 connectivity baseline added:
+  - DB-backed node registry (`Node`) with health/score metadata,
+  - managed WireGuard profile model (`WireGuardProfile`) and provisioning flow,
+  - new API endpoints for node management and WireGuard config issue.
+- Security hardening baseline expanded:
+  - NestJS API now uses Helmet, CORS allowlist, and request throttling,
+  - Swagger can be disabled with `ENABLE_SWAGGER`.
+- Admin-web CSRF/session policy added:
+  - double-submit CSRF token cookie + `x-csrf-token` header validation,
+  - CSRF checks on logout and Telegram link-code issuance routes.
+- CI/CD baseline added:
+  - GitHub Actions CI pipeline (install with frozen lockfile, prisma generate, typecheck/test/build),
+  - branch protection policy checklist documented,
+  - lockfile discipline enabled (`pnpm-lock.yaml` no longer ignored).
+- Prisma schema cleanup completed:
+  - source-of-truth schema is now `apps/api/prisma/schema.prisma`,
+  - root `prisma/` now contains documentation pointer only.
+- Day 2 (Node registry API hardening) completed:
+  - `POST/PATCH /api/nodes` protected by JWT + admin email allowlist guard,
+  - node DTO validation tightened for host/CIDR/score shape,
+  - API tests added for admin guard + DTO validation paths.
+- Day 3 (Managed WireGuard provisioning v1) completed:
+  - deterministic first-free IP allocation implemented from node CIDR pool,
+  - pool exhaustion and unsupported CIDR now fail with explicit conflict errors,
+  - idempotent provisioning behavior added (`reuseActive=true` by default),
+  - connectivity tests added for reuse, deterministic allocation, exhaustion and CIDR guardrails.
+- Day 4 (Provisioning tests + revoke path) completed:
+  - revoke endpoint added: `POST /api/connectivity/wireguard/revoke/:profileId`,
+  - revoke lifecycle implemented (`active -> revoked`, `revokedAt` persisted),
+  - revoke idempotency added for already revoked profiles,
+  - connectivity tests expanded for revoke success/idempotent/not-found paths.
+- Day 5 (Node monitor DB integration) completed:
+  - `services/node-monitor` now loads active probe targets directly from DB `Node` registry,
+  - probe snapshots now persist health and score back to `Node` records,
+  - one-shot monitor smoke run verified end-to-end with DB updates.
+- Day 6 (Connectivity observability) completed:
+  - connectivity controller now emits structured success/failure logs for provision/revoke operations,
+  - log payload includes request correlation fields (`request_id`, `profile_id`, `node_id`, `user_id`),
+  - Grafana dashboard extended with connectivity success/failure timeseries panels,
+  - observability runbook updated with connectivity log contract and panel references.
+- Day 7 (Week 1 stabilization) completed:
+  - full workspace regression pass executed (`typecheck`, `test`, `build`) with green status,
+  - week-1 documentation/tracker reconciled with implemented connectivity and monitor behavior,
+  - remaining week-1 items captured as explicit deferrals (staging migration evidence, GitHub branch protection rollout).
+- Day 8 (CI pipeline maturity) completed:
+  - CI workflow split into `prisma-validate`, `typecheck`, `test`, and `build` jobs with dependencies,
+  - lockfile gate preserved in every job via `pnpm install --frozen-lockfile`,
+  - Prisma checks strengthened with `prisma generate`, `prisma validate`, and repo-level schema governance script.
+- Day 9 preparation completed (branch protection rollout checklist):
+  - branch protection policy updated with exact required checks (`prisma-validate`, `typecheck`, `test`, `build`),
+  - rollout checklist documented for GitHub settings application and PR verification,
+  - environment blocker noted: current workspace is not git-initialized and `gh` CLI is unavailable.
+
+## Next Actions
+1. Day 10: continue API security hardening pass (auth/linking rate-limit policy review and tests).
+2. Apply Day 9 branch protection settings once repository is git-initialized and connected to GitHub.
+3. Keep Day 1 staging migration evidence as pending environment task.

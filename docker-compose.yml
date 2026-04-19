@@ -1,0 +1,92 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai-vpn-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ai_vpn_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: ai-vpn-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  loki:
+    image: grafana/loki:3.1.1
+    container_name: ai-vpn-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/config.yml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./infra/loki/loki-config.yml:/etc/loki/config.yml:ro
+      - ./infra/loki/rules:/etc/loki/rules:ro
+      - loki_data:/loki
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: ai-vpn-alertmanager
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/config.yml
+      - --config.expand-env
+    ports:
+      - "9093:9093"
+    environment:
+      ALERT_EMAIL_FROM: ${ALERT_EMAIL_FROM:-}
+      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:-}
+      ALERT_SMARTHOST: ${ALERT_SMARTHOST:-}
+      ALERT_SMTP_USERNAME: ${ALERT_SMTP_USERNAME:-}
+      ALERT_SMTP_PASSWORD: ${ALERT_SMTP_PASSWORD:-}
+      ALERT_TELEGRAM_BOT_TOKEN: ${ALERT_TELEGRAM_BOT_TOKEN:-}
+      ALERT_TELEGRAM_CHAT_ID: ${ALERT_TELEGRAM_CHAT_ID:-}
+      ALERT_PAGING_WEBHOOK_URL: ${ALERT_PAGING_WEBHOOK_URL:-}
+      ALERT_PAGERDUTY_ROUTING_KEY: ${ALERT_PAGERDUTY_ROUTING_KEY:-}
+      ALERT_OPSGENIE_API_KEY: ${ALERT_OPSGENIE_API_KEY:-}
+    volumes:
+      - ./infra/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml:ro
+
+  promtail:
+    image: grafana/promtail:3.1.1
+    container_name: ai-vpn-promtail
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+      - alertmanager
+    volumes:
+      - ./infra/promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  grafana:
+    image: grafana/grafana:11.1.4
+    container_name: ai-vpn-grafana
+    restart: unless-stopped
+    depends_on:
+      - loki
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/etc/grafana/provisioning/dashboards/json:ro
+
+volumes:
+  postgres_data:
+  loki_data:
+  grafana_data:

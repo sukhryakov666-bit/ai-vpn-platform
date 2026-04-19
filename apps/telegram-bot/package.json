@@ -1,0 +1,21 @@
+{
+  "name": "@ai-vpn/telegram-bot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start:dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "tsx --test \"src/**/*.test.ts\""
+  },
+  "dependencies": {
+    "@ai-vpn/shared-config": "workspace:*",
+    "telegraf": "^4.16.3",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.20.6"
+  }
+}
