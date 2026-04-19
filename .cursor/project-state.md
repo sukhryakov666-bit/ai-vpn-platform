@@ -175,8 +175,15 @@ Stage 2: Core Connectivity MVP complete (GO for MVP beta).
 - Release readiness decision updated:
   - `docs/release-readiness-2026-04-19.md` moved from `CONDITIONAL GO` to `GO (MVP beta)`,
   - branch protection verification and manual WireGuard smoke evidence are now explicitly recorded.
+- Post-GO hardening in progress:
+  - node endpoint uniqueness enforced in API service and DB schema (`Node.endpointHost + endpointPort`),
+  - migration applied locally: `202604191930_node_endpoint_unique`,
+  - unit coverage added in `apps/api/src/nodes/nodes.service.test.ts`.
+- Staging migration closure tooling added:
+  - runbook created: `docs/runbooks/staging-migrations.md`,
+  - includes exact command sequence and evidence checklist for closing environment-gated migration gap.
 
 ## Next Actions
-1. Close Day 1 staging migration evidence gap in tracker/runbook.
-2. Replace placeholder incident URLs in final alert validation evidence, or keep explicit `n/a (no access)` note for archival consistency.
-3. Start next sprint hardening tasks (WireGuard operationalization + production prep).
+1. Apply `202604191930_node_endpoint_unique` migration in staging and capture evidence.
+2. Close Day 1 staging migration evidence gap in tracker/runbook.
+3. Continue next sprint hardening tasks (WireGuard operationalization + production prep).

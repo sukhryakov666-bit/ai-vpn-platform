@@ -85,6 +85,7 @@ model Node {
   wireGuardProfiles WireGuardProfile[]
 
   @@index([protocol, health, isActive, score])
+  @@unique([endpointHost, endpointPort])
 }
 
 model WireGuardProfile {

@@ -17,6 +17,7 @@ Owner: `TBD`
 - [x] Local Postgres via Homebrew is running and reachable.
 - [x] Local migration lifecycle validated (`prisma migrate deploy` + seed + DB/API verification for baseline node).
 - [ ] Staging migration pending (no staging DB credentials/session in current environment).
+- [x] Staging execution playbook prepared: `docs/runbooks/staging-migrations.md`.
 - [x] Seed command executed successfully (`prisma db seed`).
 - [x] SQL evidence captured: `wg-eu-1 | wireguard | eu-central | true | 100`.
 - [x] API evidence captured: `GET /api/nodes` returns seeded `wg-eu-1` node payload.
