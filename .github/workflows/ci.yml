@@ -34,9 +34,14 @@ jobs:
 
       - name: Prisma validate schema
         run: pnpm --filter @ai-vpn/api exec prisma validate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ai_vpn_platform?schema=public
 
       - name: Prisma governance (single schema source)
         run: bash ./infra/scripts/check-prisma-governance.sh
+
+      - name: Prisma migration governance (naming and structure)
+        run: bash ./infra/scripts/check-prisma-migrations.sh
 
   typecheck:
     runs-on: ubuntu-latest
