@@ -1,11 +1,11 @@
 # Project State
 
 ## Current Stage
-Stage 2: Core Connectivity MVP (node registry + managed WireGuard flow in progress).
+Stage 2: Core Connectivity MVP complete (GO for MVP beta).
 
 ## Active Tracker
 - Primary execution tracker: `docs/execution-plan-2-weeks.md`
-- Current focus: Week 2 wrap-up (Day 13 closed, Day 14 checkpoint updated to conditional GO)
+- Current focus: Post-checkpoint hardening and environment-gated follow-ups (staging migration evidence + production prep)
 - Tracking mode: checklist + done-criteria validation per day
 
 ## Completed
@@ -144,10 +144,10 @@ Stage 2: Core Connectivity MVP (node registry + managed WireGuard flow in progre
   - CI workflow split into `prisma-validate`, `typecheck`, `test`, and `build` jobs with dependencies,
   - lockfile gate preserved in every job via `pnpm install --frozen-lockfile`,
   - Prisma checks strengthened with `prisma generate`, `prisma validate`, and repo-level schema governance script.
-- Day 9 preparation completed (branch protection rollout checklist):
-  - branch protection policy updated with exact required checks (`prisma-validate`, `typecheck`, `test`, `build`),
-  - rollout checklist documented for GitHub settings application and PR verification,
-  - environment blocker noted: current workspace is not git-initialized and `gh` CLI is unavailable.
+- Day 9 completed (branch protection rollout):
+  - branch protection policy applied and verified via real PR flow (`bp-test` -> `main`),
+  - required checks enforced (`prisma-validate`, `typecheck`, `test`, `build`),
+  - merge to `main` now requires PR with green checks.
 - Day 10 (API security baseline+) completed:
   - throttler guard enabled globally via `APP_GUARD` (`ThrottlerGuard`),
   - explicit rate-limit policies added for auth and telegram linking endpoints,
@@ -168,8 +168,15 @@ Stage 2: Core Connectivity MVP (node registry + managed WireGuard flow in progre
 - Day 14 release checkpoint completed:
   - artifact created: `docs/release-readiness-2026-04-19.md`,
   - decision updated to `CONDITIONAL GO` (pending branch protection verification + staging migration evidence closure).
+- Post-checkpoint WireGuard smoke baseline completed:
+  - runbook added: `docs/runbooks/connectivity-wireguard.md`,
+  - lifecycle smoke flow documented (`provision -> reuse -> revoke -> reprovision`),
+  - service-level smoke test re-run passed for connectivity (`apps/api/src/connectivity/connectivity.service.test.ts`).
+- Release readiness decision updated:
+  - `docs/release-readiness-2026-04-19.md` moved from `CONDITIONAL GO` to `GO (MVP beta)`,
+  - branch protection verification and manual WireGuard smoke evidence are now explicitly recorded.
 
 ## Next Actions
-1. Apply and verify Day 9 branch protection settings via test PR checks on `main`.
-2. Close Day 1 staging migration evidence gap in tracker/runbook.
-3. Replace placeholder incident URLs in final alert validation evidence for archival quality.
+1. Close Day 1 staging migration evidence gap in tracker/runbook.
+2. Replace placeholder incident URLs in final alert validation evidence, or keep explicit `n/a (no access)` note for archival consistency.
+3. Start next sprint hardening tasks (WireGuard operationalization + production prep).

@@ -13,15 +13,15 @@ Executor: `urij`
 ## Test Runs
 | Scenario | Command | Severity | Provider Label | Request ID | Receiver Path | Incident/Message URL | Status |
 |---|---|---|---|---|---|---|---|
-| PagerDuty critical | `make alert-test-pagerduty` | critical | pagerduty | `staging-1776590158` | `critical-pagerduty` + telegram + email | `<real-pagerduty-url>` | `PASS` |
-| Opsgenie critical | `make alert-test-opsgenie` | critical | opsgenie | `staging-1776590170` | `critical-opsgenie` + telegram + email | `<real-opsgenie-url>` | `PASS` |
+| PagerDuty critical | `make alert-test-pagerduty` | critical | pagerduty | `staging-1776590158` | `critical-pagerduty` + telegram + email | `n/a (no PagerDuty access)` | `PASS` |
+| Opsgenie critical | `make alert-test-opsgenie` | critical | opsgenie | `staging-1776590170` | `critical-opsgenie` + telegram + email | `n/a (no Opsgenie access)` | `PASS` |
 | Warning email | `make alert-test-warning` | warning | none | `staging-1776590178` | `warning-email` | `n/a` | `PASS` |
 
 ## Auto Run Log
 | Timestamp (UTC) | Severity | Provider | Component | Request ID | Alertmanager URL | Result | Incident URL | Resolved Received | Resolved At (UTC) |
 |---|---|---|---|---|---|---|---|---|---|
-| 2026-04-19T09:15:58Z | critical | pagerduty | observability | staging-1776590158 | http://localhost:9093 | PASS | <real-pagerduty-url> | yes | n/a |
-| 2026-04-19T09:16:10Z | critical | opsgenie | observability | staging-1776590170 | http://localhost:9093 | PASS | <real-opsgenie-url> | yes | n/a |
+| 2026-04-19T09:15:58Z | critical | pagerduty | observability | staging-1776590158 | http://localhost:9093 | PASS | n/a (no PagerDuty access) | yes | n/a |
+| 2026-04-19T09:16:10Z | critical | opsgenie | observability | staging-1776590170 | http://localhost:9093 | PASS | n/a (no Opsgenie access) | yes | n/a |
 | 2026-04-19T09:16:18Z | warning | none | observability | staging-1776590178 | http://localhost:9093 | PASS | n/a | yes | n/a |
 
 ## Payload Validation Checklist
@@ -55,5 +55,5 @@ Executor: `urij`
 - Overall Result: `PASS`
 - Ready for production routing: `yes`
 - Follow-up actions:
-  1. Replace placeholder provider URLs with real incident links in final archived evidence copy.
+  1. Add real PagerDuty/Opsgenie incident links when provider account access is available.
   2. Keep auto-validation runbook in release checklist for future deploy windows.

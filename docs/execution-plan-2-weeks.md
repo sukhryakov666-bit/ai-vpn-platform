@@ -6,7 +6,8 @@ Owner: `TBD`
 ## Week 1 - Stage 2 core connectivity
 
 ### Day 1 - DB migration + seed + baseline node
-- [ ] Apply Prisma migrations in local and staging.
+- [x] Apply Prisma migrations in local.
+- [ ] Apply Prisma migrations in staging (requires staging DB access).
 - [x] Seed at least one WireGuard node (`Node.protocol=wireguard`).
 - [x] Verify node list via `GET /api/nodes`.
 - [x] Collect evidence in runbook/dev log.
@@ -14,14 +15,15 @@ Owner: `TBD`
 **Progress log**
 - [x] Added seed logic for baseline WireGuard node in `apps/api/prisma/seed.ts`.
 - [x] Local Postgres via Homebrew is running and reachable.
-- [ ] Local migration success output is not yet captured in tracker (need final `migrate deploy` success log).
+- [x] Local migration lifecycle validated (`prisma migrate deploy` + seed + DB/API verification for baseline node).
 - [ ] Staging migration pending (no staging DB credentials/session in current environment).
 - [x] Seed command executed successfully (`prisma db seed`).
 - [x] SQL evidence captured: `wg-eu-1 | wireguard | eu-central | true | 100`.
 - [x] API evidence captured: `GET /api/nodes` returns seeded `wg-eu-1` node payload.
 
 **Done criteria**
-- [ ] Migrations complete without errors.
+- [x] Local migrations complete without errors.
+- [ ] Staging migrations complete without errors (environment-gated).
 - [x] At least one WireGuard node exists in DB.
 - [x] API returns seeded node successfully.
 
@@ -101,16 +103,16 @@ Owner: `TBD`
 - [x] Lockfile drift fails pipeline.
 
 ### Day 9 - Branch protection rollout
-- [ ] Enable branch protection for `main` in GitHub settings.
-- [ ] Require CI checks and up-to-date branch.
-- [ ] Block direct push to `main`.
+- [x] Enable branch protection for `main` in GitHub settings.
+- [x] Require CI checks and up-to-date branch.
+- [x] Block direct push to `main`.
 
 **Environment note**
-- [x] `gh` CLI is unavailable in current environment and workspace is not a git repo yet; rollout captured as explicit GitHub settings checklist in `docs/branch-protection.md`.
+- [x] Rollout validated via real PR flow (`bp-test` -> `main`) with required checks (`prisma-validate`, `typecheck`, `test`, `build`) all green before merge.
 
 **Done criteria**
-- [ ] Merge to `main` requires PR + passing checks.
-- [ ] Direct push is restricted.
+- [x] Merge to `main` requires PR + passing checks.
+- [x] Direct push is restricted.
 
 ### Day 10 - API security baseline+
 - [x] Review rate-limits for auth/linking endpoints.
@@ -160,7 +162,7 @@ Owner: `TBD`
 - [x] Document residual risks and post-release tasks.
 
 **Checkpoint artifact**
-- [x] `docs/release-readiness-2026-04-19.md` created with explicit release decision (`NO-GO`) and blocker list.
+- [x] `docs/release-readiness-2026-04-19.md` updated with explicit release decision (`GO (MVP beta)`) and remaining environment-gated follow-ups.
 
 **Done criteria**
 - [x] Explicit release decision documented.
