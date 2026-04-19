@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -39,20 +37,8 @@ services:
     restart: unless-stopped
     command:
       - --config.file=/etc/alertmanager/config.yml
-      - --config.expand-env
     ports:
       - "9093:9093"
-    environment:
-      ALERT_EMAIL_FROM: ${ALERT_EMAIL_FROM:-}
-      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:-}
-      ALERT_SMARTHOST: ${ALERT_SMARTHOST:-}
-      ALERT_SMTP_USERNAME: ${ALERT_SMTP_USERNAME:-}
-      ALERT_SMTP_PASSWORD: ${ALERT_SMTP_PASSWORD:-}
-      ALERT_TELEGRAM_BOT_TOKEN: ${ALERT_TELEGRAM_BOT_TOKEN:-}
-      ALERT_TELEGRAM_CHAT_ID: ${ALERT_TELEGRAM_CHAT_ID:-}
-      ALERT_PAGING_WEBHOOK_URL: ${ALERT_PAGING_WEBHOOK_URL:-}
-      ALERT_PAGERDUTY_ROUTING_KEY: ${ALERT_PAGERDUTY_ROUTING_KEY:-}
-      ALERT_OPSGENIE_API_KEY: ${ALERT_OPSGENIE_API_KEY:-}
     volumes:
       - ./infra/alertmanager/alertmanager.yml:/etc/alertmanager/config.yml:ro
 

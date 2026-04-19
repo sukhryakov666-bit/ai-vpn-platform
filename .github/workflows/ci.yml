@@ -34,9 +34,14 @@ jobs:
 
       - name: Prisma validate schema
         run: pnpm --filter @ai-vpn/api exec prisma validate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ai_vpn_platform?schema=public
 
       - name: Prisma governance (single schema source)
         run: bash ./infra/scripts/check-prisma-governance.sh
+
+      - name: Prisma migration governance (naming and structure)
+        run: bash ./infra/scripts/check-prisma-migrations.sh
 
   typecheck:
     runs-on: ubuntu-latest
@@ -60,6 +65,13 @@ jobs:
 
       - name: Install dependencies (frozen lockfile)
         run: pnpm install --frozen-lockfile
+
+      - name: Prepare workspace dependencies
+        run: |
+          pnpm --filter @ai-vpn/shared-types build
+          pnpm --filter @ai-vpn/shared-config build
+          pnpm --filter @ai-vpn/shared-utils build
+          pnpm --filter @ai-vpn/api prisma:generate
 
       - name: Typecheck
         run: pnpm typecheck
@@ -86,6 +98,13 @@ jobs:
 
       - name: Install dependencies (frozen lockfile)
         run: pnpm install --frozen-lockfile
+
+      - name: Prepare workspace dependencies
+        run: |
+          pnpm --filter @ai-vpn/shared-types build
+          pnpm --filter @ai-vpn/shared-config build
+          pnpm --filter @ai-vpn/shared-utils build
+          pnpm --filter @ai-vpn/api prisma:generate
 
       - name: Test
         run: pnpm test
@@ -114,6 +133,13 @@ jobs:
 
       - name: Install dependencies (frozen lockfile)
         run: pnpm install --frozen-lockfile
+
+      - name: Prepare workspace dependencies
+        run: |
+          pnpm --filter @ai-vpn/shared-types build
+          pnpm --filter @ai-vpn/shared-config build
+          pnpm --filter @ai-vpn/shared-utils build
+          pnpm --filter @ai-vpn/api prisma:generate
 
       - name: Build
         run: pnpm build

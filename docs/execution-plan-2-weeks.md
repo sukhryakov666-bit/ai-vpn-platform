@@ -113,53 +113,62 @@ Owner: `TBD`
 - [ ] Direct push is restricted.
 
 ### Day 10 - API security baseline+
-- [ ] Review rate-limits for auth/linking endpoints.
-- [ ] Validate CORS and security headers policy via env.
-- [ ] Add/adjust tests for security behavior.
+- [x] Review rate-limits for auth/linking endpoints.
+- [x] Validate CORS and security headers policy via env.
+- [x] Add/adjust tests for security behavior.
 
 **Done criteria**
-- [ ] Critical endpoints are protected with explicit limits.
-- [ ] Security policy is documented and enforceable.
+- [x] Critical endpoints are protected with explicit limits.
+- [x] Security policy is documented and enforceable.
 
 ### Day 11 - CSRF/session policy finalization
-- [ ] Ensure CSRF validation on all mutating admin-web routes.
-- [ ] Validate token lifecycle (login, refresh, logout, session expiry).
-- [ ] Add missing tests for CSRF failure/success paths.
+- [x] Ensure CSRF validation on all mutating admin-web routes.
+- [x] Validate token lifecycle (login, refresh, logout, session expiry).
+- [x] Add missing tests for CSRF failure/success paths.
 
 **Done criteria**
-- [ ] All state-changing routes enforce CSRF.
-- [ ] CSRF mismatch returns `403` consistently.
+- [x] All state-changing routes enforce CSRF.
+- [x] CSRF mismatch returns `403` consistently.
 
 ### Day 12 - Prisma governance
-- [ ] Confirm single source of truth schema policy.
-- [ ] Add CI guard against schema duplication/drift.
-- [ ] Normalize migration naming/consistency.
+- [x] Confirm single source of truth schema policy.
+- [x] Add CI guard against schema duplication/drift.
+- [x] Normalize migration naming/consistency.
 
 **Done criteria**
-- [ ] No duplicate Prisma schema files exist.
-- [ ] Governance checks enforce policy.
+- [x] No duplicate Prisma schema files exist.
+- [x] Governance checks enforce policy.
 
 ### Day 13 - Staging alert validation run
-- [ ] Trigger staging synthetic alerts (PagerDuty/Opsgenie/warning path).
-- [ ] Verify evidence auto-update and verdict transition.
-- [ ] Validate request correlation and resolved notifications.
+- [x] Trigger staging synthetic alerts (PagerDuty/Opsgenie/warning path).
+- [x] Verify evidence auto-update and verdict transition.
+- [x] Validate request correlation and resolved notifications.
+
+**Environment note**
+- [x] Evidence file created: `docs/runbooks/evidence/staging-alert-validation-2026-04-19.md`.
+- [x] Synthetic trigger attempts recorded for all 3 paths (`staging-1776585555`, `staging-1776585565`, `staging-1776585575`).
+- [x] Alertmanager reachability restored; latest synthetic runs accepted (`staging-1776587024`, `staging-1776587030`, `staging-1776587035`).
+- [x] Final clean evidence captured in `docs/runbooks/evidence/staging-alert-validation-final-2026-04-19.md` with `Overall=PASS`.
 
 **Done criteria**
-- [ ] Provider incidents are received and tracked.
-- [ ] Evidence reflects `IN_PROGRESS -> PASS/FAIL` correctly.
+- [x] Provider incidents are received and tracked.
+- [x] Evidence reflects `IN_PROGRESS -> PASS/FAIL` correctly.
 
 ### Day 14 - Release readiness checkpoint
-- [ ] Run final MVP gap review.
-- [ ] Produce Go/No-Go checklist.
-- [ ] Document residual risks and post-release tasks.
+- [x] Run final MVP gap review.
+- [x] Produce Go/No-Go checklist.
+- [x] Document residual risks and post-release tasks.
+
+**Checkpoint artifact**
+- [x] `docs/release-readiness-2026-04-19.md` created with explicit release decision (`NO-GO`) and blocker list.
 
 **Done criteria**
-- [ ] Explicit release decision documented.
-- [ ] Remaining risks and ownership are clear.
+- [x] Explicit release decision documented.
+- [x] Remaining risks and ownership are clear.
 
 ## Cross-cutting completion checklist
-- [ ] Managed WireGuard flow is production-like and test-covered.
-- [ ] Node monitor is DB-backed.
-- [ ] CI/CD and lockfile discipline are enforced.
-- [ ] API security + CSRF/session baseline is complete.
-- [ ] Staging incident/alert validation has evidence.
+- [x] Managed WireGuard flow is production-like and test-covered.
+- [x] Node monitor is DB-backed.
+- [x] CI/CD and lockfile discipline are enforced.
+- [x] API security + CSRF/session baseline is complete.
+- [x] Staging incident/alert validation has evidence.

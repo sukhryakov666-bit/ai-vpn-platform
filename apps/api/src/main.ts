@@ -5,15 +5,13 @@ import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import { AppModule } from "./app.module";
+import { parseCorsOrigins } from "./security";
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix("api");
   app.use(helmet());
-  const corsOrigins = (process.env.CORS_ORIGIN ?? "http://localhost:3001")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+  const corsOrigins = parseCorsOrigins(process.env.CORS_ORIGIN);
   app.enableCors({
     origin: corsOrigins,
     credentials: true

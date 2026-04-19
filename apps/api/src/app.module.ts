@@ -1,7 +1,9 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { readEnv } from "@ai-vpn/shared-config";
+import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { AuthModule } from "./auth/auth.module";
 import { ConnectivityModule } from "./connectivity/connectivity.module";
 import { HealthModule } from "./health/health.module";
@@ -27,6 +29,12 @@ import { UsersModule } from "./users/users.module";
     TelegramModule,
     NodesModule,
     ConnectivityModule
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
   ]
 })
 export class AppModule {}
