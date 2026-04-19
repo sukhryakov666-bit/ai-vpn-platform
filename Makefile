@@ -1,4 +1,4 @@
-.PHONY: up down dev lint test wireguard-smoke wireguard-triage release-guard alert-test-pagerduty alert-test-opsgenie alert-test-warning alert-evidence alert-evidence-pass alert-evidence-fail alert-evidence-sync alert-evidence-verdict
+.PHONY: up down dev app-run lint test wireguard-smoke wireguard-triage release-guard alert-test-pagerduty alert-test-opsgenie alert-test-warning alert-evidence alert-evidence-pass alert-evidence-fail alert-evidence-sync alert-evidence-verdict
 
 EVIDENCE_FILE ?= docs/runbooks/evidence/staging-alert-validation-final-2026-04-19.md
 
@@ -10,6 +10,9 @@ down:
 
 dev:
 	pnpm dev
+
+app-run:
+	./infra/scripts/run-mvp-app.sh
 
 lint:
 	pnpm lint

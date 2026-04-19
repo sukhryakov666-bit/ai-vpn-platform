@@ -17,6 +17,23 @@ Run a fast go/no-go preflight before a trial MVP launch.
 6. Verify admin-web is reachable (if started):
    - open `http://localhost:3001`
 
+## App-Style Startup (Single Command)
+Run MVP as an application (API + Admin Web + required infra):
+
+`make app-run`
+
+What it does automatically:
+- starts docker services: postgres + redis;
+- runs `prisma generate`, `migrate deploy`, `prisma seed`;
+- starts API (`http://localhost:3000/api`) and admin-web (`http://localhost:3001`).
+- opens browser tabs for admin-web and API nodes endpoint (macOS).
+
+Optional:
+- disable auto-open with `APP_OPEN_BROWSER=false make app-run`.
+
+Stop:
+- press `Ctrl+C`.
+
 ## Launch Decision Rule
 - **GO** when:
   - release guard passes;
@@ -35,11 +52,12 @@ Run a fast go/no-go preflight before a trial MVP launch.
 ## Latest Preflight Evidence
 - `make release-guard`: PASS
 - `make wireguard-smoke`: PASS
+- Smoke run timestamp (UTC): `2026-04-19T13:08:26.827Z`
 - Request IDs:
   - `wg-smoke-auto-1`
   - `wg-smoke-auto-2`
   - `wg-smoke-auto-3`
   - `wg-smoke-auto-4`
 - Profiles:
-  - `profile_a=cmo5s4wye0004fjas181j5sl9`
-  - `profile_b=cmo5s4x3h0006fjas3vg844fl`
+  - `profile_a=cmo5s7q48000bfjast9slhoux`
+  - `profile_b=cmo5s7q8h000dfjaswapvcdkl`
