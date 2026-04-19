@@ -1,6 +1,6 @@
-.PHONY: up down dev lint test wireguard-smoke alert-test-pagerduty alert-test-opsgenie alert-test-warning alert-evidence alert-evidence-pass alert-evidence-fail alert-evidence-sync alert-evidence-verdict
+.PHONY: up down dev lint test wireguard-smoke release-guard alert-test-pagerduty alert-test-opsgenie alert-test-warning alert-evidence alert-evidence-pass alert-evidence-fail alert-evidence-sync alert-evidence-verdict
 
-EVIDENCE_FILE ?= docs/runbooks/evidence/staging-alert-validation-$(shell date +%Y-%m-%d).md
+EVIDENCE_FILE ?= docs/runbooks/evidence/staging-alert-validation-final-2026-04-19.md
 
 up:
 	docker compose up -d
@@ -19,6 +19,9 @@ test:
 
 wireguard-smoke:
 	./infra/scripts/wireguard-smoke.sh
+
+release-guard:
+	./infra/scripts/check-release-guards.sh "$(EVIDENCE_FILE)"
 
 alert-test-pagerduty:
 	./infra/scripts/trigger-alertmanager-test.sh critical pagerduty observability "$(EVIDENCE_FILE)"
