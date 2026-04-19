@@ -66,6 +66,13 @@ jobs:
       - name: Install dependencies (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
+      - name: Prepare workspace dependencies
+        run: |
+          pnpm --filter @ai-vpn/shared-types build
+          pnpm --filter @ai-vpn/shared-config build
+          pnpm --filter @ai-vpn/shared-utils build
+          pnpm --filter @ai-vpn/api prisma:generate
+
       - name: Typecheck
         run: pnpm typecheck
 
@@ -91,6 +98,13 @@ jobs:
 
       - name: Install dependencies (frozen lockfile)
         run: pnpm install --frozen-lockfile
+
+      - name: Prepare workspace dependencies
+        run: |
+          pnpm --filter @ai-vpn/shared-types build
+          pnpm --filter @ai-vpn/shared-config build
+          pnpm --filter @ai-vpn/shared-utils build
+          pnpm --filter @ai-vpn/api prisma:generate
 
       - name: Test
         run: pnpm test
