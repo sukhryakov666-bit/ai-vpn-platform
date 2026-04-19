@@ -40,3 +40,4 @@ API docs are available at `http://localhost:3000/api/docs` after API startup.
 - Loki: `http://localhost:3100`
 - Grafana: `http://localhost:3001` (`admin/admin`)
 - Promtail ships Docker logs to Loki using structured JSON parsing for `request_id` correlation.
+bp test
