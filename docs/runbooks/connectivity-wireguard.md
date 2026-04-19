@@ -72,3 +72,18 @@ Expected:
 - pass for deterministic allocation;
 - pass for revoke/idempotency/not-found;
 - pass for pool exhaustion guardrails.
+
+## Fast Automated Check (API-Level)
+Run:
+
+`make wireguard-smoke`
+
+Optional environment overrides:
+- `BASE_URL` (default `http://localhost:3000/api`)
+- `EMAIL` and `PASSWORD` (defaults generate a unique smoke user)
+- `SMOKE_PREFIX` for custom `x-request-id` prefixes
+
+Expected:
+- script prints `PASS: wireguard smoke lifecycle`;
+- `profile_a` equals reused profile on second provision;
+- `profile_b` differs after revoke + reprovision.

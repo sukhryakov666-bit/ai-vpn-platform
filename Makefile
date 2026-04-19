@@ -1,4 +1,4 @@
-.PHONY: up down dev lint test alert-test-pagerduty alert-test-opsgenie alert-test-warning alert-evidence alert-evidence-pass alert-evidence-fail alert-evidence-sync alert-evidence-verdict
+.PHONY: up down dev lint test wireguard-smoke alert-test-pagerduty alert-test-opsgenie alert-test-warning alert-evidence alert-evidence-pass alert-evidence-fail alert-evidence-sync alert-evidence-verdict
 
 EVIDENCE_FILE ?= docs/runbooks/evidence/staging-alert-validation-$(shell date +%Y-%m-%d).md
 
@@ -16,6 +16,9 @@ lint:
 
 test:
 	pnpm test
+
+wireguard-smoke:
+	./infra/scripts/wireguard-smoke.sh
 
 alert-test-pagerduty:
 	./infra/scripts/trigger-alertmanager-test.sh critical pagerduty observability "$(EVIDENCE_FILE)"
