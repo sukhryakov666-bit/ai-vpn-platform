@@ -182,8 +182,12 @@ Stage 2: Core Connectivity MVP complete (GO for MVP beta).
 - Staging migration closure tooling added:
   - runbook created: `docs/runbooks/staging-migrations.md`,
   - includes exact command sequence and evidence checklist for closing environment-gated migration gap.
+- Staging-equivalent migration evidence captured:
+  - `prisma migrate deploy`: no pending migrations,
+  - `prisma migrate status`: schema up to date,
+  - DB index verification: `Node_endpointHost_endpointPort_key` exists.
 
 ## Next Actions
-1. Apply `202604191930_node_endpoint_unique` migration in staging and capture evidence.
-2. Close Day 1 staging migration evidence gap in tracker/runbook.
-3. Continue next sprint hardening tasks (WireGuard operationalization + production prep).
+1. Provision dedicated staging DB credentials to replace staging-equivalent local evidence with full remote staging proof.
+2. Continue next sprint hardening tasks (WireGuard operationalization + production prep).
+3. Keep CI/build health and runbooks aligned with each hardening increment.

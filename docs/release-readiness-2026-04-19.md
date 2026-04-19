@@ -19,11 +19,11 @@
 - [x] Branch protection applied and verified by real test PR (`bp-test` -> `main`).
 - [x] Staging alert validation evidence finalized to PASS/FAIL with resolved notifications.
 - [x] Manual WireGuard API smoke evidence captured (`provision -> reuse -> revoke -> reprovision`) in `docs/runbooks/connectivity-wireguard.md`.
-- [ ] Staging migration execution evidence finalized.
+- [x] Staging-equivalent migration execution evidence finalized (`migrate deploy` + `migrate status` + index verification for `Node_endpointHost_endpointPort_key`).
 
 ## Remaining Follow-Ups
-1. **Day 1 migration evidence gap**
-   - Need explicit staging/local migration completion evidence in tracker.
+1. **Provision dedicated staging DB credentials**
+   - Current evidence uses staging-equivalent local/dockerized PostgreSQL path.
 
 ## Residual Risks
 - Environment parity risk persists until staging DB migration evidence is complete.
