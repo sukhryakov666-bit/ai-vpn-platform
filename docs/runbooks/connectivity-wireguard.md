@@ -99,3 +99,18 @@ Expected:
     - `staleThreshold`
 
 Use these endpoints for periodic stale-session cleanup and manual triage before rotating connectivity profiles.
+
+## Triage Script
+Run profile triage in dry-run mode:
+
+`ACCESS_TOKEN=<jwt> make wireguard-triage`
+
+Apply stale revoke:
+
+`ACCESS_TOKEN=<jwt> APPLY_REVOKE=true MAX_AGE_HOURS=24 make wireguard-triage`
+
+Optional overrides:
+- `BASE_URL` (default `http://localhost:3000/api`)
+- `REQUEST_PREFIX` for request-id labels
+
+Output includes profile counts and, when apply mode is enabled, revoked profile IDs and stale threshold.
