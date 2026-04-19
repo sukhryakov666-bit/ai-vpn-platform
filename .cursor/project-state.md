@@ -5,7 +5,7 @@ Stage 2: Core Connectivity MVP (node registry + managed WireGuard flow in progre
 
 ## Active Tracker
 - Primary execution tracker: `docs/execution-plan-2-weeks.md`
-- Current focus: Week 2 / Day 10
+- Current focus: Week 2 wrap-up (Day 13 closed, Day 14 checkpoint updated to conditional GO)
 - Tracking mode: checklist + done-criteria validation per day
 
 ## Completed
@@ -148,8 +148,28 @@ Stage 2: Core Connectivity MVP (node registry + managed WireGuard flow in progre
   - branch protection policy updated with exact required checks (`prisma-validate`, `typecheck`, `test`, `build`),
   - rollout checklist documented for GitHub settings application and PR verification,
   - environment blocker noted: current workspace is not git-initialized and `gh` CLI is unavailable.
+- Day 10 (API security baseline+) completed:
+  - throttler guard enabled globally via `APP_GUARD` (`ThrottlerGuard`),
+  - explicit rate-limit policies added for auth and telegram linking endpoints,
+  - CORS policy parser hardened to reject wildcard origin when credentials are enabled,
+  - security tests added for CORS env parsing behavior.
+- Day 11 (CSRF/session policy finalization) completed:
+  - CSRF validation coverage confirmed for all mutating admin-web routes (`/api/session/logout`, `/api/telegram/link-code`),
+  - session lifecycle hardened to re-issue CSRF token on authenticated `session/me` when cookie is missing,
+  - CSRF unit tests added for success/failure matching and cookie lifecycle helpers.
+- Day 12 (Prisma governance) completed:
+  - schema source-of-truth policy enforced by existing CI gate (`check-prisma-governance.sh`),
+  - migration governance gate added (`check-prisma-migrations.sh`) for naming and structure checks,
+  - CI `prisma-validate` job now enforces both schema and migration governance checks.
+- Day 13 completed (staging validation evidence):
+  - final evidence file captured: `docs/runbooks/evidence/staging-alert-validation-final-2026-04-19.md`,
+  - final verdict reached: `Overall=PASS`, `Ready=yes`,
+  - synthetic validation completed for pagerduty/opsgenie/warning paths.
+- Day 14 release checkpoint completed:
+  - artifact created: `docs/release-readiness-2026-04-19.md`,
+  - decision updated to `CONDITIONAL GO` (pending branch protection verification + staging migration evidence closure).
 
 ## Next Actions
-1. Day 10: continue API security hardening pass (auth/linking rate-limit policy review and tests).
-2. Apply Day 9 branch protection settings once repository is git-initialized and connected to GitHub.
-3. Keep Day 1 staging migration evidence as pending environment task.
+1. Apply and verify Day 9 branch protection settings via test PR checks on `main`.
+2. Close Day 1 staging migration evidence gap in tracker/runbook.
+3. Replace placeholder incident URLs in final alert validation evidence for archival quality.
