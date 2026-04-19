@@ -121,6 +121,74 @@ export class ConnectivityService {
     };
   }
 
+  async listWireGuardProfiles(userId: string) {
+    const profiles = await this.prisma.wireGuardProfile.findMany({
+      where: { userId },
+      orderBy: [{ createdAt: "desc" }],
+      select: {
+        id: true,
+        nodeId: true,
+        status: true,
+        createdAt: true,
+        revokedAt: true,
+        clientAddress: true
+      }
+    });
+
+    return profiles.map((profile) => ({
+      profileId: profile.id,
+      nodeId: profile.nodeId,
+      status: profile.status,
+      clientAddress: profile.clientAddress,
+      createdAt: profile.createdAt.toISOString(),
+      revokedAt: profile.revokedAt?.toISOString() ?? null
+    }));
+  }
+
+  async revokeStaleWireGuardProfiles(userId: string, maxAgeHours = 24) {
+    if (!Number.isFinite(maxAgeHours) || maxAgeHours <= 0) {
+      throw new ConflictException("invalid_wireguard_stale_max_age_hours");
+    }
+
+    const staleThreshold = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000);
+    const staleActiveProfiles = await this.prisma.wireGuardProfile.findMany({
+      where: {
+        userId,
+        status: WireGuardProfileStatus.active,
+        createdAt: { lt: staleThreshold }
+      },
+      select: { id: true }
+    });
+
+    if (staleActiveProfiles.length === 0) {
+      return {
+        revokedCount: 0,
+        revokedProfileIds: [] as string[],
+        staleThreshold: staleThreshold.toISOString()
+      };
+    }
+
+    const profileIds = staleActiveProfiles.map((profile) => profile.id);
+    const now = new Date();
+    await this.prisma.wireGuardProfile.updateMany({
+      where: {
+        id: { in: profileIds },
+        userId,
+        status: WireGuardProfileStatus.active
+      },
+      data: {
+        status: WireGuardProfileStatus.revoked,
+        revokedAt: now
+      }
+    });
+
+    return {
+      revokedCount: profileIds.length,
+      revokedProfileIds: profileIds,
+      staleThreshold: staleThreshold.toISOString()
+    };
+  }
+
   private generateKey(): string {
     return randomBytes(32).toString("base64");
   }

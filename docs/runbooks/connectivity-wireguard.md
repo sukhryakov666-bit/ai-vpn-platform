@@ -87,3 +87,15 @@ Expected:
 - script prints `PASS: wireguard smoke lifecycle`;
 - `profile_a` equals reused profile on second provision;
 - `profile_b` differs after revoke + reprovision.
+
+## Operational Endpoints
+- `GET /api/connectivity/wireguard/profiles`
+  - returns user profiles with normalized fields (`profileId`, `status`, `createdAt`, `revokedAt`, `clientAddress`).
+- `POST /api/connectivity/wireguard/revoke-stale`
+  - optional body: `{ "maxAgeHours": 24 }`
+  - revokes active profiles older than threshold and returns:
+    - `revokedCount`
+    - `revokedProfileIds`
+    - `staleThreshold`
+
+Use these endpoints for periodic stale-session cleanup and manual triage before rotating connectivity profiles.

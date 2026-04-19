@@ -197,3 +197,80 @@ test("revokeWireGuardProfile rejects unknown profile for user", async () => {
     (error: unknown) => error instanceof NotFoundException
   );
 });
+
+test("listWireGuardProfiles returns normalized profile payload", async () => {
+  const createdAt = new Date("2026-04-20T10:00:00.000Z");
+  const revokedAt = new Date("2026-04-20T12:00:00.000Z");
+  const service = new ConnectivityService({
+    wireGuardProfile: {
+      findMany: async () => [
+        {
+          id: "profile-1",
+          nodeId: "node-1",
+          status: WireGuardProfileStatus.active,
+          createdAt,
+          revokedAt: null,
+          clientAddress: "10.8.0.2/32"
+        },
+        {
+          id: "profile-2",
+          nodeId: "node-2",
+          status: WireGuardProfileStatus.revoked,
+          createdAt,
+          revokedAt,
+          clientAddress: "10.8.0.3/32"
+        }
+      ]
+    }
+  } as never);
+
+  const profiles = await service.listWireGuardProfiles("user-1");
+  assert.equal(profiles.length, 2);
+  assert.equal(profiles[0].profileId, "profile-1");
+  assert.equal(profiles[1].revokedAt, revokedAt.toISOString());
+});
+
+test("revokeStaleWireGuardProfiles revokes stale active profiles", async () => {
+  let updatedIds: string[] = [];
+  const service = new ConnectivityService({
+    wireGuardProfile: {
+      findMany: async () => [{ id: "profile-a" }, { id: "profile-b" }],
+      updateMany: async ({ where }: { where: { id: { in: string[] } } }) => {
+        updatedIds = where.id.in;
+        return { count: updatedIds.length };
+      }
+    }
+  } as never);
+
+  const result = await service.revokeStaleWireGuardProfiles("user-1", 24);
+  assert.equal(result.revokedCount, 2);
+  assert.deepEqual(result.revokedProfileIds, ["profile-a", "profile-b"]);
+  assert.deepEqual(updatedIds, ["profile-a", "profile-b"]);
+});
+
+test("revokeStaleWireGuardProfiles returns zero when no stale profiles", async () => {
+  const service = new ConnectivityService({
+    wireGuardProfile: {
+      findMany: async () => [],
+      updateMany: async () => ({ count: 0 })
+    }
+  } as never);
+
+  const result = await service.revokeStaleWireGuardProfiles("user-1", 24);
+  assert.equal(result.revokedCount, 0);
+  assert.deepEqual(result.revokedProfileIds, []);
+});
+
+test("revokeStaleWireGuardProfiles rejects invalid maxAgeHours", async () => {
+  const service = new ConnectivityService({
+    wireGuardProfile: {
+      findMany: async () => [],
+      updateMany: async () => ({ count: 0 })
+    }
+  } as never);
+
+  await assert.rejects(
+    () => service.revokeStaleWireGuardProfiles("user-1", 0),
+    (error: unknown) => error instanceof ConflictException
+  );
+});
